@@ -1,0 +1,11 @@
+.content-body {
+    min-height: 24rem;
+}
+
+.streamDiv {
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -o-pre-wrap;
+    word-wrap: break-word;
+    margin-left: 20px
+}

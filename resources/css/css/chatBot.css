@@ -1,0 +1,23 @@
+.font-semibold {
+    font-weight: 600;
+}
+
+.grid-cols-5 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.grid {
+    display: grid;
+}
+
+.justify-end {
+    justify-content: flex-end;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.flex {
+    display: flex;
+}
