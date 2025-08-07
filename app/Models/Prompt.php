@@ -26,6 +26,8 @@ class Prompt extends Model
     public const TYPE_SELECT = [
         'text' => 'Text',
         'image' => 'Image',
+        'music' => 'Music',
+        'video' => 'Video',
     ];
 
     public const STATUS_SELECT = [
@@ -84,6 +86,15 @@ class Prompt extends Model
     public function getIsTextAttribute(): bool
     {
         return $this->type == 'text';
+    }
+
+    public function getIsVideoAttribute(): bool
+    {
+        return $this->type == 'video';
+    }
+    public function getIsMusicAttribute(): bool
+    {
+        return $this->type == 'music';
     }
 
     public function scopeEnabled($query)

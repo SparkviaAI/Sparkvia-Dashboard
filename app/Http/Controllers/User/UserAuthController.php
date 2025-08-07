@@ -90,7 +90,7 @@ class UserAuthController extends Controller
         // Check if there is an error in the request
         if ($request->has('error')) {
             Session::flash('error', "Oops! Something went wrong. Please try again");
-            return redirect(route('getHomePage'));
+            return redirect(route('newHomePage'));
         }
 
         $code = $request->input('code');
@@ -168,7 +168,7 @@ class UserAuthController extends Controller
                                 return redirect(route('userDashboard'));
                             } else {
                                 Session::flash('error', "Account not associated with Admin's Discord");
-                                return redirect(route('getHomePage'));
+                                return redirect(route('newHomePage'));
                             }
                         } else {
                             Auth::guard('user')->login($checkUser);
@@ -180,7 +180,7 @@ class UserAuthController extends Controller
                                 return redirect(route('userDashboard'));
                             } else {
                                 Session::flash('error', "Account not associated with Admin's Discord");
-                                return redirect(route('getHomePage'));
+                                return redirect(route('newHomePage'));
                             }
                         }
                     }
@@ -188,15 +188,15 @@ class UserAuthController extends Controller
         
                 if (!$userFound) {
                     Session::flash('error', "Account not associated with Admin's Discord");
-                    return redirect(route('getHomePage'));
+                    return redirect(route('newHomePage'));
                 }
             } else {
                 Session::flash('error', "Account not associated with Admin's Discord");
-                return redirect(route('getHomePage'));
+                return redirect(route('newHomePage'));
             }
         } catch (\Exception $e) {
             Session::flash('error', "Oops! Something went wrong. Please try again");
-            return redirect(route('getHomePage'));
+            return redirect(route('newHomePage'));
             // return "Error: " . $e->getMessage();
         }
 
@@ -209,7 +209,8 @@ class UserAuthController extends Controller
     {
         Auth::guard('user')->logout();
         Session::flash('success', 'You are logout sucessfully');
-        return redirect(route('getHomePage'));
+        // return redirect(route('newHomePage'));
+        return redirect()->to('https://auth.sparkvia.ai/user/user-login');
     }
 
 
@@ -315,7 +316,8 @@ class UserAuthController extends Controller
 
                 if ($user->hasRole('user')) {
                     Session::flash('success', 'User login successful');
-                    return redirect()->route('userDashboard');
+                    // return redirect()->route('userDashboard');
+                    return redirect()->to('https://app.sparkvia.ai/user/user-dashboard');
                 } else {
                     Auth::guard('user')->logout();
                     Session::flash('error', 'You do not have access');

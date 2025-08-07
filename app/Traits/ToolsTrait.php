@@ -20,6 +20,7 @@ use OpenAI\Exceptions\ErrorException;
 use OpenAI\Exceptions\TransporterException;
 use Symfony\Component\HttpFoundation\Response;
 use TikToken\Encoder;
+use Illuminate\Support\Facades\Http;
 
 trait ToolsTrait
 {
@@ -78,6 +79,8 @@ trait ToolsTrait
             return $this->makeRequest($modifiedPrompt, $prompt->max_tokens, $prompt->engine, $prompt->chat_bot_id, $links);
         } elseif ($prompt->isImage) {
             return $this->makeImageRequest($modifiedPrompt);
+        }elseif ($prompt->isVideo) {
+            return $this->makeVideoRequest($modifiedPrompt);
         } else {
             throw new \InvalidArgumentException('Invalid prompt: ' . $prompt->id);
         }
@@ -199,7 +202,9 @@ trait ToolsTrait
         $postFields = json_encode([
             'prompt' => $prompt,
             'n' => 1,
-            "size" => "1024x1024"
+            "size" => "1024x1024",
+            'model' => 'dall-e-3', // Specify DALL-E 3 model
+            // 'style' => 'natural' // Optional: 'natural' or 'vivid'
         ]);
 
         try {
@@ -222,6 +227,73 @@ trait ToolsTrait
         // }
         // return $result['data'][0]['url'];
     }
+
+    // private function makeVideoRequest(string $prompt): string
+    // {
+    //     // dd("inside the video request");
+
+    //     try {
+    //         $response = Http::timeout(600) // Increased timeout for custom API
+    //             ->post('http://16.16.242.205:8000/generate-video', [
+    //                 'prompt' => $prompt
+    //             ]);
+
+    //         // dd($response);
+    //         if ($response->successful()) {
+    //             $result = $response->json();
+    //             return $resultData['video_url'];
+    //         }
+    //         // Log::warning("Custom API returned status: ".$response->status());
+    //         return $response->status();
+
+    //     } catch (\Exception $e) {
+    //         // Log::error("Failed to fetch from custom API: " . $e->getMessage());
+    //         dd($e->getMessage());
+    //         return $e->getMessage();
+    //     }
+    // }
+    private function makeVideoRequest(string $prompt): string
+    {
+        try {
+            $response = Http::timeout(600)->post('http://16.16.242.205:8000/generate-video', [
+                'prompt' => $prompt
+            ]);
+
+            // Handle successful response (status 200)
+            if ($response->successful()) {
+                $result = $response->json();
+
+                if (isset($result['video_url'])) {
+                    return $result['video_url'];
+                }
+
+                // Unexpected successful response without video_url
+                \Log::warning('API success but no video_url found in response.', ['response' => $result]);
+                return 'API response successful but video URL is missing.';
+            }
+
+            // Handle 500 error with custom message from Python API
+            if ($response->status() === 500) {
+                $error = $response->json();
+                $detail = $error['detail'] ?? 'Unknown server error';
+                \Log::error('Python API 500 error: ' . $detail);
+                return 'Server error from video generator: ' . $detail;
+            }
+
+            // Handle other failed responses (e.g. 400, 404)
+            \Log::error('Python API returned unexpected status.', [
+                'status' => $response->status(),
+                'body' => $response->body()
+            ]);
+            return 'Unexpected API error (status: ' . $response->status() . ').';
+
+        } catch (\Exception $e) {
+            // Network error, timeout, connection issue, etc.
+            \Log::error('Exception while calling video API: ' . $e->getMessage());
+            return 'Exception: ' . $e->getMessage();
+        }
+    }
+
 
 
     public function generateEmbedding($question): array

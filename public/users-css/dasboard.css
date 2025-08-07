@@ -1463,6 +1463,7 @@ button.download-btn {
 
 .lightColorBtn{
     background-color: #F3F4F6 !important;
+    pointer-events: none;
 }
 
 .iconStyleCls{
@@ -1527,6 +1528,19 @@ ul.link-ul.nest li:after {
     }
     .input-section {
         margin-bottom: 20px;
+    }
+
+    .greenColorBtn {
+    background-color: #49DF28 !important;
+    width: 100%;
+    font-size: 14px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    }
+
+
+    .marClsN {
+        margin-left: 5px !important;
     }
 }
 /* NEW CSSFORM HOME PAGE COPIED ENDS */

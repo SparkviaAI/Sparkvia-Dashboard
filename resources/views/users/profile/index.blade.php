@@ -11,6 +11,29 @@
         object-fit: cover !important;
         cursor: pointer !important;
     }
+
+    @media (max-width:991px) {
+        .otherChat {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        
+        }
+        .content-top {
+            margin: 40px 0px 20px 0;
+        }
+
+        .chat-section {
+            margin: 50px 0;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .stGpCls{
+            gap: 15px;
+        }
+    }
 </style>
 <section class="dasboard-all pages pt-4 pb-4 height100vh">
     <div class="container-fluid">
@@ -27,7 +50,7 @@
             <div class="col-lg-12">
                 <div class="chat-section">
                     <div>
-                        <div class="d-flex align-items-center">
+                        <div class="d-flex align-items-center stGpCls" style="flex-wrap: wrap;">
                             <img src="{{ $getUserDetails->profile_image ? asset('f_user/'.$getUserDetails->profile_image) : asset('users-images/defaultimage.jpg') }}" alt="Profile picture" class="profile-picture" id="profile-picture">
                             <div class="" style="margin-left: 3%;">
                                 <h4 class="shapeHCls">Profile Picture</h4>
@@ -44,11 +67,11 @@
                         @csrf
                         <input type="hidden" name="userId" id="userId" value="{{ $getUserDetails->id }}">
                         <div class="otherChat"> 
-                            <div class="col-lg-5">
+                            <div class="col-lg-5 col-sm-12">
                                 <label for="name" class="form-label">Name</label>
                                 <input type="text" required class="form-control" id="name" name="name" value="{{ $getUserDetails->name }}">
                             </div>
-                            <div class="col-lg-5">
+                            <div class="col-lg-5 col-sm-12">
                                 <label for="email" class="form-label">Email Address</label>
                                 <input type="text" class="form-control" id="email" name="email" placeholder="Enter your email" value="{{ $getUserDetails->email }}">
                             </div>

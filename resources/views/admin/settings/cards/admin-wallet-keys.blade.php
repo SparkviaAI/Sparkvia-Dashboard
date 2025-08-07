@@ -28,7 +28,7 @@ $getWalletData = App\Models\AdminWalletKey::where('network_id',1)->orderBy('id',
                                         <input class="api-input {{ $errors->has('value') ? 'is-invalid' : '' }}" type="text"
                                             name="private_key"
                                             value="{{@$getWalletData->pv}}"
-                                            id="private_key" required>
+                                            id="private_key">
                                         @if($errors->has('private_key'))
                                             <span class="text-danger">{{ $errors->first('private_key') }}</span>
                                         @endif

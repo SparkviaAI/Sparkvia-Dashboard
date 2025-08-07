@@ -160,6 +160,14 @@
     color: black;
 }
 
+#generated-video {
+    width: 100%;
+    max-height: 500px;
+    border-radius: 8px;
+    margin-top: 15px;
+    background-color: #000;
+}
+
 </style>
 <section class="dasboard-all pages pt-4 pb-4">
     <div class="container-fluid">
@@ -276,7 +284,7 @@
                 <!-- OLD CODE FOR STATIC QUESTIONS ENDS -->
                 <div class="col-lg-6">
                     <div class="button-prompt reloadDivBtn">
-                        <div class="note"><span style="color: #49DF28;">NB.</span> All prompts generated cost <b>1 GPT</b> token. Ensure to review your prompt before proceeding.</div>
+                        <div class="note"><span style="color: #49DF28;">NB.</span> All prompts generated cost <b>1 Spark</b> credit. Ensure to review your prompt before proceeding.</div>
 
 
                             <!-- Modal Structure -->
@@ -318,7 +326,7 @@
                     </div>
         </form>
         <div class="prompt-field third">
-            <div class="prompt-third-box">
+            <div class="prompt-third-box" style="flex-wrap: wrap;">
                 <h2 class="prompt-title">Content Editor</h2>
                 <div class="third-btn-group" style="display:flex;">
                     <a class="copy-btn"><img src="{{ asset('users-images/copy-image.png') }}" alt="" width="40px;" height="40px;"></a>
@@ -350,6 +358,8 @@
             <div class="newClsPrompt prompt-content-field">
                 <p id="generated-content"></p>
                 <img id="generated-image" src="" alt="" style="display:none; max-width:100%;">
+
+                <video id="generated-video" controls style="display:none; max-width:100%;"></video>
             </div>
 
             <!-- BEFORE GENERATED CONTENT STARTS -->
@@ -575,12 +585,51 @@
                     $(".emptyClsPrompt").hide();
                     $(".newClsPrompt").show();
                     $(".third-btn-group").removeClass("disAbCls");
-
+                    console.log(data);
+                    console.log(promptType);
                     try {
                         if (promptType === 'image') {
                             if (data.success) {
                                 $('#generated-image').attr('src', data.message).show();
                             }
+                        }else if (promptType === 'video') {
+                            console.log("inside the promptType === 'video'")
+                            // if((data.type === 'video')){
+                                console.log("inside the data.type='video")
+                                console.log("data.success")
+                                console.log(data.success)
+
+                                    try{
+                                        // if (data.success) {
+                                            console.log("data.success inside true")
+                                            var videoElement = $('#generated-video')[0];
+                                            videoElement.src = data.video_url;
+                                            videoElement.load();
+                                            $('#generated-video').show();
+                                            
+                                            // Update download button for video
+                                            $('#hidTextDwnd').hide();
+                                            $('.download-btn').off('click').on('click', function() {
+                                                downloadFile(data.video_url, 'generated-video.mp4');
+                                            });
+                                        // } else {
+                                        //     alert(data.video_url || "Error generating video");
+                                        //     console.error(data);
+                                        // }
+                                    }catch (e) {
+                                        alert(data.video_url);
+                                        console.error('Error in ty catch', e);
+                                        alert(e);
+                                    }
+                                    
+                                // if((data.success)){
+                                //     $('#generated-video').attr('src', data.video_url).show()[0].load();
+                                //     $('#generated-image').hide();
+                                // }else{
+                                //     alert(data);
+                                //     console.error(data);
+                                // }
+                            // }
                         } else {
                             let response = JSON.parse(data);
                             typeWriter(response.content, 0);

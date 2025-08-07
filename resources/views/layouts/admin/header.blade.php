@@ -10,7 +10,7 @@
                             <li>
                                 <ul class="navbar-nav ml-auto ul313">
                                     <li class="option-item  ">
-                                        <a href="{{ route('getHomePage') }}" target="_blank">{{ trans('translation.landing_page') }}</a>
+                                        <a href="{{ route('newHomePage') }}" target="_blank">{{ trans('translation.landing_page') }}</a>
                                     </li>
                                     <!-- <li class="option-item  ">
                                         <a href="/dashboard/home" target="_blank">User dashboard</a>

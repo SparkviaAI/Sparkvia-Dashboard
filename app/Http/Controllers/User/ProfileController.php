@@ -90,7 +90,7 @@ class ProfileController extends Controller
             return response()->json([
                 'status' => 'success', 
                 'message' => 'User Deleted Successfully.',
-                'redirect_url' => route('getHomePage') // Provide the URL for redirection
+                'redirect_url' => route('newHomePage') // Provide the URL for redirection
             ], 200);
         }
         Session::flash('error', "Error deleting profile");

@@ -12,6 +12,8 @@ use App\Models\Menu;
 use App\Models\User;
 use App\Models\Setting;
 use App\Models\AdminWalletKey;
+use App\Models\WalletAddressHistory;
+use App\Models\XrpConversionRate;
 use App\Traits\MediaUploadingTrait;
 use App\Traits\ImageUpload;
 use App\Utils\Settings;
@@ -327,12 +329,46 @@ class SettingsController extends Controller
             
             if (!empty($getAdminWallet)) {
                 $getAdminWallet->address = $request->address;
-                $getAdminWallet->pv = $request->private_key;
+                $getAdminWallet->pv = $request->private_key ?? 0;
                 $getAdminWallet->save();
+
+                // Update the users wallet too..
+                $getUserWallet = WalletAddressHistory::where('currency_id',2)->where('coin_type','XRP')->get();
+                foreach($getUserWallet as $wall){
+                    $wall->address = $request->address;
+                    $wall->save(); 
+                }
                 Session::flash('success','Admin Wallet Updated Successfully.');
                 return back();
             }else{
                 Session::flash('error','No Admin Wallet Found.');
+                return back();
+            }
+        }
+        Session::flash('error','Error while Updating. Please try again later.');
+        return back();
+    }
+
+
+    public function xrpConversionToken(Request $request)
+    {
+
+        $validated = $request->validate([
+            'xrp_amount' => 'required|numeric|min:0',
+            'sparks_amount' => 'required|integer|min:1',
+        ]);
+
+        if (isset($request->id)) {
+            $getConvertData = XrpConversionRate::where('id',$request->id)->first();
+            
+            if (!empty($getConvertData)) {
+                $getConvertData->xrp_amount = $request->xrp_amount;
+                $getConvertData->sparks_amount = $request->sparks_amount;
+                $getConvertData->save();
+                Session::flash('success','Conversion Data Updated Successfully.');
+                return back();
+            }else{
+                Session::flash('error','No Data Found.');
                 return back();
             }
         }

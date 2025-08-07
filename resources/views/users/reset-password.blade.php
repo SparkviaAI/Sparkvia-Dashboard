@@ -3,7 +3,7 @@
 
     <div class="container-fluid">
       <ul>
-        <a class="navbar-brand" href="{{ route('getHomePage') }}"><img src="{{ asset('f_admin/'.$logoSetting?->value ?? 'landing-images/logo-landing.png') }}" alt=""></a>
+        <a class="navbar-brand" href="{{ route('newHomePage') }}"><img src="{{ asset('f_admin/'.$logoSetting?->value ?? 'landing-images/logo-landing.png') }}" alt=""></a>
       </ul>
     </div>
 

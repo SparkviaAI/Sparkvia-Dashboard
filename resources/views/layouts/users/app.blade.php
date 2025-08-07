@@ -122,9 +122,15 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.all.min.js"></script>
 
-    @if(!empty(Illuminate\Support\Facades\Auth::guard('user')->user()))
+    {{-- <!-- @if(!empty(Illuminate\Support\Facades\Auth::guard('user')->user()))
       @include('layouts.users.sidebar')
       @include('layouts.users.header')
+    @endif --> --}}
+
+    @if(!empty(Illuminate\Support\Facades\Auth::guard('user')->user()) && 
+    !request()->routeIs('handleLoggin', 'handleRegisterr', 'userForgotPassword', 'userPassword.reset'))
+        @include('layouts.users.sidebar')
+        @include('layouts.users.header')
     @endif
     @yield('content')
 

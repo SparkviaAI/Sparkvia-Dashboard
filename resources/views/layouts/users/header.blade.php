@@ -2,6 +2,29 @@
     .removeArwCls::after{
         display: none !important;
     }
+
+    @media (max-width: 991px) {
+        .greenColorBtn {
+            background-color: #49DF28 !important;
+            width: 100%;
+            font-size: 15px;
+            padding-top: 8px;
+            padding-bottom: 8px;
+            height: 60px;
+        }
+
+
+        a.btn.btn-secondary.lightColorBtn {
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .marClsN {
+            margin-left: 5px !important;
+        }
+    }
 </style>
     <section class="dasboard-all top-header">
         <div class="container-fluid">
@@ -18,12 +41,12 @@
                                 <!-- NEW BUTTONS STARTS -->
                                 <li class="option-item spCls">
                                     <a class="btn btn-success greenColorBtn" href="{{ route('subscription.index') }}" role="button">
-                                    Purchase Credits
+                                    Purchase Spark Credits
                                     </a>
                                 </li>
                                 <li class="option-item spCls">
                                     <a class="btn btn-secondary lightColorBtn" href="#" role="button" style="display:flex;background: gainsboro;color: black;">
-                                        <img src="{{ asset('users-images/coin.png') }}" width="25px" height="25px">
+                                        <img src="{{ asset('landing-images/Logo Black FC.png') }}" width="70px" height="20px">
                                         <span class="myAvailableCoins" style="align-self: center;margin-left: 7px;">
                                             {{
                                                 number_format(\App\Models\Wallet::where('user_id', Illuminate\Support\Facades\Auth::guard('user')->user()->id)->first()->balance_in_wallet, 0)

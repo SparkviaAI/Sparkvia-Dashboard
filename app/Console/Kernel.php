@@ -15,6 +15,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         \App\Console\Commands\MonitorXrpDepositsCommand::class,
+        \App\Console\Commands\MoveXrpToHotWallet::class,
     ];
 
 
@@ -25,6 +26,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('xrp:monitor-deposits')->everyMinute();
+        $schedule->command('xrp:move-to-hotwallet')->everyMinute();
     }
 
     /**

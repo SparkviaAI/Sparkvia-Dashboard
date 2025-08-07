@@ -13,8 +13,12 @@ class MonitorXrpDepositsCommand extends Command
     protected $signature = 'xrp:monitor-deposits';
     protected $description = 'Monitor XRP deposits for all user wallet addresses';
 
-    // Custom API endpoint
-    protected $customApiEndpoint = 'http://16.16.242.205:8000/get_transactions';
+    // API endpoints to try (in order)
+    protected $apiEndpoints = [
+        'https://api.xrpscan.com/api/v1/account/{address}/transactions',
+        'https://data.xrplmeta.org/account/{address}/transactions',
+        'https://xrplcluster.com/api/v1/account/{address}/transactions'
+    ];
 
     public function handle()
     {
@@ -30,7 +34,6 @@ class MonitorXrpDepositsCommand extends Command
 
         foreach ($wallets as $wallet) {
             $address = $wallet->address;
-            $destinationTag = $wallet->wallet_key;
             $userId = $wallet->user_id;
             $coinId = $wallet->currency_id;
 
@@ -52,12 +55,6 @@ class MonitorXrpDepositsCommand extends Command
                 continue;
             }
 
-            // Log::info("==================================================================================================================================================================================");
-            // Log::info("get the transactions of XRP to {$address} :  (destinationTag: {$destinationTag})");
-            // Log::info("get the transactions info");
-            // Log::info($transactions);
-            // Log::info("==================================================================================================================================================================================");
-            
             $this->processTransactions($transactions, $wallet);
         }
 
@@ -73,42 +70,38 @@ class MonitorXrpDepositsCommand extends Command
 
     protected function fetchTransactions(string $address): ?array
     {
-        try {
-            $response = Http::timeout(30) // Increased timeout for custom API
-                ->get($this->customApiEndpoint, [
-                    'address' => $address
-                ]);
+        foreach ($this->apiEndpoints as $endpoint) {
+            try {
+                $url = str_replace('{address}', $address, $endpoint);
+                $response = Http::timeout(15)->get($url);
 
-            if ($response->successful()) {
-                $data = $response->json();
-                
-                // Handle the response format from your custom API
-                if (isset($data['transactions'])) {
-                    return $data['transactions'];
+                if ($response->successful()) {
+                    $data = $response->json();
+                    
+                    // Handle different API response formats
+                    if (isset($data['transactions'])) {
+                        return $data['transactions'];
+                    }
+                    if (isset($data['result']) && isset($data['result']['transactions'])) {
+                        return $data['result']['transactions'];
+                    }
+                    if (is_array($data)) {
+                        return $data; // Some APIs return array directly
+                    }
                 }
-                if (isset($data['result']) && isset($data['result']['transactions'])) {
-                    return $data['result']['transactions'];
+
+                // Handle specific error responses
+                if ($response->status() === 404) {
+                    Log::warning("Address not found in ledger: {$address}");
+                    return [];
                 }
-                if (is_array($data)) {
-                    return $data; // Return array directly if that's the format
-                }
-                
-                return []; // Return empty array if no transactions found
+            } catch (\Exception $e) {
+                Log::warning("Failed to fetch from {$endpoint}: " . $e->getMessage());
+                continue;
             }
-
-            // Handle specific error responses
-            if ($response->status() === 404) {
-                Log::warning("Address not found: {$address}");
-                return [];
-            }
-
-            Log::warning("Custom API returned status: ".$response->status());
-            return null;
-
-        } catch (\Exception $e) {
-            Log::error("Failed to fetch from custom API: " . $e->getMessage());
-            return null;
         }
+
+        return null;
     }
 
     protected function processTransactions(array $transactions, WalletAddressHistory $wallet): void
@@ -122,9 +115,6 @@ class MonitorXrpDepositsCommand extends Command
                 if (!isset($tx['meta']) || $tx['meta']['TransactionResult'] !== 'tesSUCCESS') {
                     continue;
                 }
-                if (!isset($tx['validated']) || $tx['validated'] !== true) {
-                    continue;
-                }
 
                 $txData = $tx['tx'];
                 $destination = strtolower($txData['Destination'] ?? '');
@@ -134,19 +124,6 @@ class MonitorXrpDepositsCommand extends Command
                 if ($destination !== $address) {
                     continue;
                 }
-
-                // ===================== NEW DESTINATION TAG CHECK ====================
-                $destinationTag = $txData['DestinationTag'] ?? null;
-                $walletTag = $wallet->wallet_key;
-                // Skip if wallet expects a tag but transaction doesn't have one
-                if (!empty($walletTag) && empty($destinationTag)) {
-                    continue;
-                }
-                // Skip if tags don't match (strict comparison)
-                if (!empty($walletTag) && $destinationTag != $walletTag) {
-                    continue;
-                }
-                // =========================== END CHANGES =========================
 
                 $hash = $txData['hash'];
                 $amount = $txData['Amount'] ?? 0;
@@ -167,16 +144,10 @@ class MonitorXrpDepositsCommand extends Command
                     continue;
                 }
 
-                // Get ledger index (closest to block number in XRP)
-                $ledgerIndex = $txData['ledger_index'] ?? $txData['inLedger'] ?? null;
-                
-                // Get sender address
-                $senderAddress = $txData['Account'] ?? '';
-
                 // Save deposit
                 DepositeTransaction::create([
                     'user_id' => $wallet->user_id,
-                    'receiver_wallet_id' => $wallet->wallet_id,
+                    'wallet_id' => $wallet->wallet_id,
                     'coin_id' => $wallet->currency_id,
                     'network_id' => 1,
                     'transaction_id' => $hash,
@@ -184,15 +155,9 @@ class MonitorXrpDepositsCommand extends Command
                     'address' => $wallet->address,
                     'is_admin_receive' => 0,
                     'status' => 1,
-                    'confirmations' => 1, // XRP transactions are final once included in a validated ledger
+                    'confirmations' => 1,
                     'created_at' => now(),
                     'updated_at' => now(),
-                    // 'sender_wallet_id' => '', // You might want to map this to a user if possible
-                    'address_type' => 1,
-                    'coin_type' => 'XRP',
-                    'from_address' => $senderAddress,
-                    'network_type' => 1,
-                    'block_number' => $ledgerIndex, // Using ledger index as block number equivalent
                 ]);
 
                 $this->info("New XRP deposit: {$amountXrp} XRP to {$wallet->address} (tx: {$hash})");

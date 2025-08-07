@@ -97,6 +97,31 @@ class ToolsController extends Controller
         $aiContent = "";
         $data = $this->generate($request);
 
+        if(($request->prompt_type) == 'video'){
+            // $response = json_encode(['content' => [],'video_url' => $data]);
+            // return $response;
+            if (Str::startsWith($data, 'http') || Str::startsWith($data, '/videos/')) {
+                // success - use the video
+                // return $response = json_encode(['success'=>true,'content' => [], 'type'=>'video' ,'video_url' => 'http://16.16.242.205:8000' . $data]);
+                return response()->json([
+                    'success' => true,
+                    'content' => [],
+                    'type' => 'video',
+                    'video_url' => 'http://16.16.242.205:8000' . $data
+                ]);
+            } else {
+                // failure - show message
+                // return $response = json_encode(['success'=>false,'content' => [],'type'=>'video', 'video_url' => $data]);
+                // session()->flash('error', $data);
+                return response()->json([
+                    'success' => false,
+                    'content' => [],
+                    'type' => 'video', 
+                    'video_url' => $data
+                ]);
+            }
+        }
+
         $response = new StreamedResponse(function () use ($data, &$aiContent, $request, $user, $prompt) {
             $wordCount = 0;
             foreach ($data as $item) {
