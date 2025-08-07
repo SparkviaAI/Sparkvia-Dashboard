@@ -99,7 +99,7 @@ Route::domain('app.sparkvia.ai')->group(function () {
             Route::resource('categories', CategoryController::class);
             ////////////////// CATEGORY ROUTES ENDS ///////////////////
 
-            
+
             ////////////////// QUESTION ROUTES STARTS ///////////////////
             Route::post('questions/list',[QuestionController::class, 'list'])->name('questions.list');
             Route::delete('questions/destroy', [QuestionController::class, 'massDestroy'])->name('questions.massDestroy');
@@ -150,8 +150,8 @@ Route::domain('app.sparkvia.ai')->group(function () {
             ////////////////// USERS ROUTES STARTS ///////////////////
             Route::post('users/list', [UsersController::class, 'list'])->name('users.list');
             Route::delete('users/destroy', [UsersController::class, 'massDestroy'])->name('users.massDestroy');
-            Route::resource('users', UsersController::class);        
-            // GET USER WALLET DETAILS 
+            Route::resource('users', UsersController::class);
+            // GET USER WALLET DETAILS
             Route::get('users/walletDetails', [UsersController::class, 'walletDetails'])->name('users.walletDetails');
             Route::post('/save-tokens', [UsersController::class,'saveTokens'])->name('save-tokens');
             ////////////////// USERS ROUTES STARTS ///////////////////
@@ -186,20 +186,20 @@ Route::domain('auth.sparkvia.ai')->group(function () {
         Route::get('/discord-login', [UserAuthController::class, 'discordLogin'])->name('discordLogin');
         Route::get('/oauth2/login/redirect',  [UserAuthController::class, 'handleDiscordCallback'])->name('discord.callback');
 
-        // NEW LOGIN AND REGISTER ROUTES STARTS 
-        Route::get('user-login',  [UserAuthController::class, 'handleLoggin'])->name('handleLoggin');
-        Route::get('user-register',  [UserAuthController::class, 'handleRegisterr'])->name('handleRegisterr');
-        Route::post('/user-login-post', [UserAuthController::class, 'userLogin'])->name('userLogin');
-        Route::post('/user-register-post', [UserAuthController::class, 'userRegister'])->name('userRegister');
+        // NEW LOGIN AND REGISTER ROUTES STARTS
+        Route::get('/login',  [UserAuthController::class, 'handleLoggin'])->name('handleLoggin');
+        Route::get('/register',  [UserAuthController::class, 'handleRegisterr'])->name('handleRegisterr');
+        Route::post('/login-post', [UserAuthController::class, 'userLogin'])->name('userLogin');
+        Route::post('/register-post', [UserAuthController::class, 'userRegister'])->name('userRegister');
 
         Route::get('/forgot-password', [UserAuthController::class, 'userForgotPassword'])->name('userForgotPassword');
         Route::post('/forgot-password-post', [UserAuthController::class, 'userForgotPasswordPost'])->name('userForgotPasswordPost');
         Route::get('/reset-password/{token}', [UserAuthController::class, 'resetUserPassword'])->name('userPassword.reset');
-        Route::post('/update-password-post', [UserAuthController::class, 'updateUserPasswordPost'])->name('userUpdatePasswordPost'); 
+        Route::post('/update-password-post', [UserAuthController::class, 'updateUserPasswordPost'])->name('userUpdatePasswordPost');
     });
 });
-    
-// NEW LOGIN AND REGISTER ROUTES ENDS 
+
+// NEW LOGIN AND REGISTER ROUTES ENDS
 
 Route::domain('app.sparkvia.ai')->group(function () {
     Route::group(['middleware' => 'auth.user'], function () {
