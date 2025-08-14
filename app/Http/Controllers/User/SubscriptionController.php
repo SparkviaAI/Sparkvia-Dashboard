@@ -363,7 +363,8 @@ class SubscriptionController extends Controller
         }
         
         // $xrpUri = "xrp:$adminWalletAddress?dt=$destinationTag";
-        $xrpUri = "xrp:$adminWalletAddress";
+        // $xrpUri = "xrp:$adminWalletAddress";
+        $xrpUri = "$adminWalletAddress";
 
         return response()->json([
             'success' => true,

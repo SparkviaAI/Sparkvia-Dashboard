@@ -187,8 +187,8 @@ Route::domain('auth.sparkvia.ai')->group(function () {
         Route::get('/oauth2/login/redirect',  [UserAuthController::class, 'handleDiscordCallback'])->name('discord.callback');
 
         // NEW LOGIN AND REGISTER ROUTES STARTS 
-        Route::get('user-login',  [UserAuthController::class, 'handleLoggin'])->name('handleLoggin');
-        Route::get('user-register',  [UserAuthController::class, 'handleRegisterr'])->name('handleRegisterr');
+        Route::get('login',  [UserAuthController::class, 'handleLoggin'])->name('handleLoggin');
+        Route::get('register',  [UserAuthController::class, 'handleRegisterr'])->name('handleRegisterr');
         Route::post('/user-login-post', [UserAuthController::class, 'userLogin'])->name('userLogin');
         Route::post('/user-register-post', [UserAuthController::class, 'userRegister'])->name('userRegister');
 
@@ -208,8 +208,8 @@ Route::domain('app.sparkvia.ai')->group(function () {
         //////// DARK OR LIGHT MODE STARTS ////////////
         Route::post('user-theme-data', [UserAuthController::class, 'getThemeData'])->name('getThemeData');
         //////// DARK OR LIGHT MODE ENDS ////////////
-        Route::post('user-logout', [UserAuthController::class, 'userLogout'])->name('userLogout');
-        Route::get('user-dashboard', [UHC::class, 'userDashboard'])->name('userDashboard');
+        Route::post('logout', [UserAuthController::class, 'userLogout'])->name('userLogout');
+        Route::get('dashboard', [UHC::class, 'userDashboard'])->name('userDashboard');
 
         //////////////////// TOOLS ROUTES STARTS ////////////////////
         Route::get('tools/{id}', [ToolsController::class, 'toolsIndex'])->name('tools.index');

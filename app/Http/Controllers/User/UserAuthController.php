@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;  
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 
 class UserAuthController extends Controller
@@ -209,8 +210,7 @@ class UserAuthController extends Controller
     {
         Auth::guard('user')->logout();
         Session::flash('success', 'You are logout sucessfully');
-        // return redirect(route('newHomePage'));
-        return redirect()->to('https://auth.sparkvia.ai/user/user-login');
+        return redirect()->to('https://auth.sparkvia.ai/user/login');
     }
 
 
@@ -277,6 +277,15 @@ class UserAuthController extends Controller
                 Auth::guard('user')->login($user);
                 // Auth::login($user);
 
+                // SEND EMAIL TO THE NEW USER STARTS
+                $subject = env('APP_NAME')." Successful Registeration";
+                Mail::send('sign_welcome_email',['user' => $user], function ($message) use ($subject,$user) {
+                    $message->to($user->email)
+                        ->subject($subject)
+                        ->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
+                });
+                // SEND EMAIL TO THE NEW USER ENDS
+
                 if (Auth::guard('user')->check()) {
                     Session::flash('success', "User Registeration Successful");
                     return redirect(route('userDashboard'));
@@ -316,21 +325,21 @@ class UserAuthController extends Controller
 
                 if ($user->hasRole('user')) {
                     Session::flash('success', 'User login successful');
-                    // return redirect()->route('userDashboard');
-                    return redirect()->to('https://app.sparkvia.ai/user/user-dashboard');
+                    return redirect()->to('https://app.sparkvia.ai/user/dashboard');
                 } else {
                     Auth::guard('user')->logout();
                     Session::flash('error', 'You do not have access');
-                    return back();
+                    return redirect()->route('handleLoggin');
                 }
             } else {
                 Session::flash('error', 'Incorrect Email or Password');
-                return back();
+                return redirect()->route('handleLoggin');
             }
         } catch (\Exception $e) {
             Session::flash('error', "Oops!".$e->getMessage().".");
             // return redirect(route('handleRegisterr'));
-            return back();
+            return redirect()->route('handleLoggin');
+            // return back();
         }
 
     }

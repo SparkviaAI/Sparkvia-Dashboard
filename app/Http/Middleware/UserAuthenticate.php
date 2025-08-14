@@ -21,8 +21,7 @@ class UserAuthenticate
     public function handle(Request $request, Closure $next)
     {
         if (!Auth::guard('user')->check()) {
-            // return redirect()->route('newHomePage');
-            return redirect()->to('https://auth.sparkvia.ai/user/user-login');
+            return redirect()->to('https://auth.sparkvia.ai/user/login');
         }
 
         return $next($request);

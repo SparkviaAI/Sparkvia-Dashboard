@@ -39,7 +39,7 @@ class UserResetPasswordNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         // Generate the custom URL (no /admin prefix)
-        $url = url('/reset-password/' . $this->token . '?email=' . ($this->email));
+        $url = url('/user/reset-password/' . $this->token . '?email=' . ($this->email));
 
         return (new MailMessage)
             ->subject('Reset Password Notification')
