@@ -186,19 +186,11 @@ Route::domain('auth.sparkvia.ai')->group(function () {
         Route::get('/discord-login', [UserAuthController::class, 'discordLogin'])->name('discordLogin');
         Route::get('/oauth2/login/redirect',  [UserAuthController::class, 'handleDiscordCallback'])->name('discord.callback');
 
-<<<<<<< HEAD
-        // NEW LOGIN AND REGISTER ROUTES STARTS 
-        Route::get('login',  [UserAuthController::class, 'handleLoggin'])->name('handleLoggin');
-        Route::get('register',  [UserAuthController::class, 'handleRegisterr'])->name('handleRegisterr');
-        Route::post('/user-login-post', [UserAuthController::class, 'userLogin'])->name('userLogin');
-        Route::post('/user-register-post', [UserAuthController::class, 'userRegister'])->name('userRegister');
-=======
         // NEW LOGIN AND REGISTER ROUTES STARTS
         Route::get('/login',  [UserAuthController::class, 'handleLoggin'])->name('handleLoggin');
         Route::get('/register',  [UserAuthController::class, 'handleRegisterr'])->name('handleRegisterr');
         Route::post('/login-post', [UserAuthController::class, 'userLogin'])->name('userLogin');
         Route::post('/register-post', [UserAuthController::class, 'userRegister'])->name('userRegister');
->>>>>>> 29e0f5361ec0fcfcfb7ac9acaba546ae2118064c
 
         Route::get('/forgot-password', [UserAuthController::class, 'userForgotPassword'])->name('userForgotPassword');
         Route::post('/forgot-password-post', [UserAuthController::class, 'userForgotPasswordPost'])->name('userForgotPasswordPost');
